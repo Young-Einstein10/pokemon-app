@@ -1,14 +1,13 @@
-import { Inter } from "next/font/google";
 import { useGetPokemonTypes } from "@/hooks/pokemon";
 import Link from "next/link";
-
-const inter = Inter({ subsets: ["latin"] });
+import Loader from "@/components/ui/loader";
+import ErrorMessage from "@/components/ui/errorMessage";
 
 export default function Home() {
   const { types, error, isLoading } = useGetPokemonTypes();
 
-  if (error) return <div>failed to load</div>;
-  if (isLoading) return <div>loading...</div>;
+  if (error) return <ErrorMessage>Failed to load</ErrorMessage>;
+  if (isLoading) return <Loader />;
 
   return (
     <div className="container px-4 py-10">

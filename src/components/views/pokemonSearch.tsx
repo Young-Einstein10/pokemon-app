@@ -1,17 +1,38 @@
 import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useRouter } from "next/router";
 
 interface IPokemonSearchProps {
-  onSearch: (value: string) => void;
+  defaultSearchValue?: string;
 }
 
-const PokemonSearch = ({ onSearch }: IPokemonSearchProps) => {
-  const [searchValue, setSearchValue] = useState("");
+const PokemonSearch = ({ defaultSearchValue = "" }: IPokemonSearchProps) => {
+  const [searchValue, setSearchValue] = useState(defaultSearchValue);
+
+  const router = useRouter();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSearch(searchValue);
+
+    if (!searchValue) {
+      router.push(`${router.asPath.split("?")[0]}`, undefined, {
+        shallow: true,
+      });
+      return;
+    }
+
+    router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          ...(searchValue ? { search: searchValue } : {}),
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   return (

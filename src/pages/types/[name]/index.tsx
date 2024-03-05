@@ -4,6 +4,8 @@ import { TypeDetails, useGetPokemonTypeDetails } from "@/hooks/pokemon";
 import Pagination from "@/components/ui/pagination";
 import PokemonList from "@/components/views/pokemonList";
 import PokemonSearch from "@/components/views/pokemonSearch";
+import ErrorMessage from "@/components/ui/errorMessage";
+import Loader from "@/components/ui/loader";
 
 const TypeDetails = () => {
   const router = useRouter();
@@ -15,10 +17,18 @@ const TypeDetails = () => {
   );
 
   useEffect(() => {
-    if (data?.pokemon) {
-      setDataSource(data?.pokemon);
-    }
-  }, [data?.pokemon]);
+    if (!router.query?.search) return setDataSource(data?.pokemon || []);
+
+    const handleSearch = (value: string) => {
+      // Use original data to filter
+      const results = data?.pokemon.filter((d) =>
+        d.pokemon.name.toLowerCase().includes(value)
+      );
+      setDataSource(results?.length ? results : []);
+    };
+
+    handleSearch(router.query?.search as string);
+  }, [router.query, data?.pokemon]);
 
   const [itemOffset, setItemOffset] = useState(0);
   const itemsPerPage = 25;
@@ -28,31 +38,13 @@ const TypeDetails = () => {
   const currentPokemons = dataSource.slice(itemOffset, endOffset);
   const pageCount = Math.ceil(dataSource.length! / itemsPerPage);
 
-  const handleSearch = (value: string) => {
-    // Use original data to filter
-    const results = data?.pokemon.filter((d) =>
-      d.pokemon.name.toLowerCase().includes(value)
-    );
-    setDataSource(results?.length ? results : []);
-  };
-
   const handlePageClick = (event: { selected: number }) => {
     const newOffset = (event.selected * itemsPerPage) % dataSource.length!;
     setItemOffset(newOffset);
   };
 
-  if (error)
-    return (
-      <div className="container px-4 py-10 text-2xl font-medium text-destructive">
-        Failed to load
-      </div>
-    );
-  if (isLoading)
-    return (
-      <div className="container px-4 py-10 text-2xl font-medium">
-        Loading...
-      </div>
-    );
+  if (error) return <ErrorMessage>Failed to load</ErrorMessage>;
+  if (isLoading) return <Loader />;
 
   return (
     <div className="container px-4 py-10">
@@ -61,7 +53,7 @@ const TypeDetails = () => {
       </h1>
 
       <div>
-        <PokemonSearch onSearch={handleSearch} />
+        <PokemonSearch defaultSearchValue={router.query?.search as string} />
         <PokemonList currentPokemons={currentPokemons} />
         <Pagination pageCount={pageCount} handlePageClick={handlePageClick} />
       </div>
