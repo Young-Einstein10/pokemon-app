@@ -35,13 +35,13 @@ const PokemonDetails = () => {
 
   return (
     <div className="container flex justify-center items-center px-4 py-10">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-1 sm:gap-4">
         <Link href={`/types/${name}/${previous}`} passHref>
           <Button variant="ghost" className="p-0 w-10 h-10">
             <ChevronLeftIcon />
           </Button>
         </Link>
-        <div className="shadow rounded-lg p-6 flex-1 min-w-[400px]">
+        <div className="shadow rounded-lg p-6 flex-1 min-w-[350px] sm:min-w-[400px]">
           <h1 className="text-xl font-semibold mb-6">
             Pokemon Details and Stats
           </h1>

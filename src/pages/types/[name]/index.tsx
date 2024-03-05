@@ -12,9 +12,7 @@ const TypeDetails = () => {
   const { name } = router.query;
 
   const { data, error, isLoading } = useGetPokemonTypeDetails(name as string);
-  const [dataSource, setDataSource] = useState<TypeDetails["pokemon"]>(
-    () => data?.pokemon || []
-  );
+  const [dataSource, setDataSource] = useState<TypeDetails["pokemon"]>([]);
 
   useEffect(() => {
     if (!router.query?.search) return setDataSource(data?.pokemon || []);
@@ -24,6 +22,10 @@ const TypeDetails = () => {
       const results = data?.pokemon.filter((d) =>
         d.pokemon.name.toLowerCase().includes(value)
       );
+
+      // Reset page offset in case it has changed
+      setItemOffset(0);
+
       setDataSource(results?.length ? results : []);
     };
 
